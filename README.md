@@ -12,6 +12,9 @@ app creates random(100)+5 spheres of random size, position, with random material
 ### Controls
 
 f: toggle fullscreen
+
 spacebar: animate rotating camera
+
 up/downkey dolly in/out
+
 left/rightkey truck left/right
