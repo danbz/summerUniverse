@@ -5,7 +5,7 @@ void ofApp::setup(){
     pointSize = 4;
     camDist = 0.f;
     camRotationSpeed = 0.1;
-    maxPlanets = ofRandom(100)+5;
+   maxPlanets = ofRandom(100)+5;
     minRadius = 6;
     maxRadius = 200;
     maxRotationSpeed = 0.5;
@@ -51,6 +51,7 @@ void ofApp::setup(){
     }
     
     ofBackground(0);
+    //ofSetBackgroundAuto(false);
 }
 
 //--------------------------------------------------------------
@@ -76,6 +77,7 @@ void ofApp::draw(){
     for (int i=0; i< maxPlanets; i++){
         ofPushMatrix();
 
+
         ofRotateZDeg(camDist);
         ofRotateYDeg(universe[i].orbitDegrees); //rotate orbit
         ofTranslate(universe[i].location);
@@ -85,11 +87,11 @@ void ofApp::draw(){
 
         universe[i].material.begin();
         //universe[i].sphere.draw();
-        universe[i].sphere.drawWireframe();
+       // universe[i].sphere.drawWireframe();
         universe[i].sphere.drawVertices();
         universe[i].material.end();
-
         ofPopMatrix();
+        
     }
     cam.end();
     worldLight.disable();
