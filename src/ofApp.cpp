@@ -5,14 +5,17 @@ void ofApp::setup(){
     pointSize = 4;
     camDist = 0.f;
     camRotationSpeed = 0.1;
-   maxPlanets = ofRandom(100)+5;
+    maxPlanets = ofRandom(100)+5;
     minRadius = 6;
     maxRadius = 200;
     maxRotationSpeed = 0.5;
     maxOrbitSpeed = 0.1;
     universeWidth = universeHeight = universeDepth = 6000;
+    expansionStep = expansionSteps = 100;
+    currentExpandingPlanet = 0;
     
-    b_rotateCam = b_fullScreen = false;
+    b_rotateCam = b_fullScreen = b_contracting = false;
+    b_expanding = true;
     //cam.setPosition(0, 500 , -100000);
     cam.setFarClip(50000);
     
@@ -27,29 +30,8 @@ void ofApp::setup(){
     rgbaFbo.begin();
     ofClear(255,255,255, 0);
     rgbaFbo.end();
-    //generate a vector of planets of various sizes and locations
-    for (int i=0; i< maxPlanets; i++){
-        planet newPlanet;
-        newPlanet.rotationSpeed = ofRandom(maxRotationSpeed);
-        newPlanet.rotationDegrees =0.f;
-        newPlanet.orbitSpeed = ofRandom(maxOrbitSpeed);
-        newPlanet.orbitDegrees =0.f;
-        newPlanet.location.x = (ofRandom(universeWidth) - universeWidth/2);
-        newPlanet.location.y = (ofRandom(universeHeight)- universeHeight/2);
-        newPlanet.location.z = (ofRandom(universeDepth) - universeDepth/2);
-        newPlanet.sphere.setMode(OF_PRIMITIVE_POINTS);
-        newPlanet.sphere.setRadius(ofRandom(minRadius, maxRadius));
-        newPlanet.sphere.setResolution(newPlanet.sphere.getRadius()/10);
-        newPlanet.material.setShininess( ofRandom(200) );
-        ofColor diffuse(ofRandom(255), ofRandom(255), ofRandom(255));
-        ofColor ambient(ofRandom(120), ofRandom(120), ofRandom(120));
-        newPlanet.material.setDiffuseColor(diffuse);
-        newPlanet.material.setAmbientColor(ambient);
-        newPlanet.material.setSpecularColor(ofColor(255, 255, 255, 255));
-        
-        universe.push_back(newPlanet);
-    }
-    
+
+    generateUniverse();
     ofBackground(0);
     //ofSetBackgroundAuto(false);
 }
@@ -74,30 +56,98 @@ void ofApp::draw(){
         camDist+=camRotationSpeed; // spin the universe in front of the camera
     }
     glPointSize(pointSize);
-    for (int i=0; i< maxPlanets; i++){
-        ofPushMatrix();
-
-
-        ofRotateZDeg(camDist);
-        ofRotateYDeg(universe[i].orbitDegrees); //rotate orbit
-        ofTranslate(universe[i].location);
-        ofRotateYDeg(-universe[i].rotationDegrees); // planetary spin
-        universe[i].rotationDegrees += universe[i].rotationSpeed;
-        universe[i].orbitDegrees += universe[i].orbitSpeed;
-
-        universe[i].material.begin();
-        //universe[i].sphere.draw();
-       // universe[i].sphere.drawWireframe();
-        universe[i].sphere.drawVertices();
-        universe[i].material.end();
-        ofPopMatrix();
-        
+    if (!b_expanding && !b_contracting){
+        for (int i=0; i< maxPlanets; i++){
+            ofPushMatrix();
+            
+            ofRotateZDeg(camDist);
+            ofRotateYDeg(universe[i].orbitDegrees); //rotate orbit
+            ofTranslate(universe[i].location);
+            ofRotateYDeg(-universe[i].rotationDegrees); // planetary spin
+            universe[i].rotationDegrees += universe[i].rotationSpeed;
+            universe[i].orbitDegrees += universe[i].orbitSpeed;
+            
+            universe[i].material.begin();
+            //universe[i].sphere.draw();
+            // universe[i].sphere.drawWireframe();
+            universe[i].sphere.drawVertices();
+            universe[i].material.end();
+            ofPopMatrix();
+            
+        }
+    } else if (b_expanding) {
+        if (expansionStep > 1)
+            expansionStep--;
+        if (currentExpandingPlanet < universe.size()) {
+            
+            for (int i=0; i< maxPlanets; i++){
+                ofPushMatrix();
+                
+                ofRotateZDeg(camDist);
+                ofRotateYDeg(universe[i].orbitDegrees); //rotate orbit
+                if (i < currentExpandingPlanet) {
+                    ofTranslate(universe[i].location);
+                } else if (i == currentExpandingPlanet) {
+                    ofTranslate(universe[i].location / expansionStep);
+                } else {
+                    break;
+                }
+                ofRotateYDeg(-universe[i].rotationDegrees); // planetary spin
+                
+                universe[i].rotationDegrees += universe[i].rotationSpeed;
+                
+                universe[i].orbitDegrees += universe[i].orbitSpeed;
+                
+                universe[i].material.begin();
+                //universe[i].sphere.draw();
+                // universe[i].sphere.drawWireframe();
+                universe[i].sphere.drawVertices();
+                universe[i].material.end();
+                ofPopMatrix();
+                
+            }
+            currentExpandingPlanet ++;
+        } else {
+            b_expanding = false;
+        }
     }
+    
     cam.end();
     worldLight.disable();
     ofDisableDepthTest();
     
   // rgbaFbo.draw(0,0);
+}
+
+//--------------------------------------------------------------
+
+void ofApp::generateUniverse(){
+    //generate a vector of planets of various sizes and locations
+
+    universe.clear();
+    for (int i=0; i< maxPlanets; i++){
+        planet newPlanet;
+        newPlanet.rotationSpeed = ofRandom(maxRotationSpeed);
+        newPlanet.rotationDegrees =0.f;
+        newPlanet.orbitSpeed = ofRandom(maxOrbitSpeed);
+        newPlanet.orbitDegrees =0.f;
+        newPlanet.location.x = (ofRandom(universeWidth) - universeWidth/2);
+        newPlanet.location.y = (ofRandom(universeHeight)- universeHeight/2);
+        newPlanet.location.z = (ofRandom(universeDepth) - universeDepth/2);
+        newPlanet.sphere.setMode(OF_PRIMITIVE_POINTS);
+        newPlanet.sphere.setRadius(ofRandom(minRadius, maxRadius));
+        newPlanet.sphere.setResolution(newPlanet.sphere.getRadius()/10);
+        newPlanet.material.setShininess( ofRandom(200) );
+        ofColor diffuse(ofRandom(255), ofRandom(255), ofRandom(255));
+        ofColor ambient(ofRandom(120), ofRandom(120), ofRandom(120));
+        newPlanet.material.setDiffuseColor(diffuse);
+        newPlanet.material.setAmbientColor(ambient);
+        newPlanet.material.setSpecularColor(ofColor(255, 255, 255, 255));
+        universe.push_back(newPlanet);
+    }
+    b_expanding = true;
+    expansionStep = expansionSteps;
+    currentExpandingPlanet = 0;
 }
 
 //--------------------------------------------------------------
@@ -161,6 +211,9 @@ void ofApp::keyPressed(int key){
             
         case OF_KEY_RIGHT:
             cam.truck(10);
+            break;
+        case ' ':
+            generateUniverse();
             break;
     }
 

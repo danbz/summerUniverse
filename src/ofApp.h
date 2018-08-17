@@ -31,10 +31,11 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     void drawFboPlanets();
+    void generateUniverse();
     
     vector <planet> universe;
-    int maxPlanets, minRadius, maxRadius, universeWidth, universeHeight, universeDepth, pointSize;
-    bool b_rotateCam, b_fullScreen;
+    int maxPlanets, minRadius, maxRadius, universeWidth, universeHeight, universeDepth, pointSize, expansionSteps, expansionStep, currentExpandingPlanet;
+    bool b_rotateCam, b_fullScreen, b_expanding, b_contracting;
     float camDist, maxRotationSpeed, maxOrbitSpeed, camRotationSpeed;
     ofEasyCam cam;
     ofLight worldLight;
