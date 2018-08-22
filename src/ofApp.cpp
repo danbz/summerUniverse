@@ -11,7 +11,7 @@ void ofApp::setup(){
     maxRotationSpeed = 0.5;
     maxOrbitSpeed = 0.1;
     universeWidth = universeHeight = universeDepth = 6000;
-    expansionStep = expansionSteps = 100;
+    expansionStep = expansionSteps = 1000.0;
     currentExpandingPlanet = 0;
     
     b_rotateCam = b_fullScreen = b_contracting = false;
@@ -77,7 +77,7 @@ void ofApp::draw(){
         }
     } else if (b_expanding) {
         if (expansionStep > 1)
-            expansionStep--;
+            expansionStep-=0.0001;
         if (currentExpandingPlanet < universe.size()) {
             
             for (int i=0; i< maxPlanets; i++){

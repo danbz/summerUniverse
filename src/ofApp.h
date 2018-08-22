@@ -34,9 +34,9 @@ class ofApp : public ofBaseApp{
     void generateUniverse();
     
     vector <planet> universe;
-    int maxPlanets, minRadius, maxRadius, universeWidth, universeHeight, universeDepth, pointSize, expansionSteps, expansionStep, currentExpandingPlanet;
+    int maxPlanets, minRadius, maxRadius, universeWidth, universeHeight, universeDepth, pointSize, expansionSteps, currentExpandingPlanet;
     bool b_rotateCam, b_fullScreen, b_expanding, b_contracting;
-    float camDist, maxRotationSpeed, maxOrbitSpeed, camRotationSpeed;
+    float camDist, maxRotationSpeed, maxOrbitSpeed, camRotationSpeed, expansionStep;
     ofEasyCam cam;
     ofLight worldLight;
     
