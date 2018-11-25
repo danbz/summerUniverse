@@ -1,6 +1,6 @@
 # About SummerUniverse
 
-![Screenshot of emptyExample](emptyExample.png)
+![Screenshot of emptyExample](summer-universe-screenshot.png)
 
 ### exploration
 
